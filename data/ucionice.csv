@@ -1,0 +1,15 @@
+id,naziv,kapacitet_nastava,kapacitet_lv,tip
+A1,Amfiteatar Branko Galeb,156,0,amfiteatar
+S1,Sala 428,56,0,predavaonica
+S2,Sala 419,40,0,predavaonica
+K1,Kabinet 432,36,0,kabinet
+K2,Kabinet 412,10,0,kabinet
+K3,Kabinet 406,3,0,kancelarija
+K4,Kabinet 450,7,0,kabinet
+K5,Kabinet 439,3,0,kancelarija
+K6,Kabinet 411,3,0,kancelarija
+K7,Kabinet 440,3,0,kancelarija
+R1,Računarski centar,40,20,racunarski_kabinet
+R2,Veliki računarski centar,70,35,racunarski_kabinet
+R3,Kabinet 441,32,16,racunarski_kabinet
+R4,Kabinet 426,32,16,racunarski_kabinet
