@@ -55,6 +55,7 @@ id,predmet,smjer,godina,broj_studenata
 15,Teorija skupova,PM,2,3
 15,Teorija skupova,NMI,2,5
 15,Teorija skupova,NM,2,5
+16,Teorija vjerovatnoće,KN,2,20
 16,Teorija vjerovatnoće,OP,2,3
 16,Teorija vjerovatnoće,PM,2,3
 16,Teorija vjerovatnoće,NMI,2,5
@@ -192,7 +193,7 @@ id,predmet,smjer,godina,broj_studenata
 77,Kompjuterska grafika,KN,4,4
 78,Matematičke metode u obradi i analizi digitalnih slika,KN,4,4
 79,Napredni algoritmi i strukture podataka,KN,4,4
-80,Softverski inžinjering,KN,5,4
+80,Softverski inženjering,KN,5,4
 81,Kompjuterska vizija,KN,5,4
 82,Parcijalne diferencijalne jednadžbe,PM,4,2
 82,Parcijalne diferencijalne jednadžbe,OP,4,2
