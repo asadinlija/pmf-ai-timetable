@@ -202,4 +202,15 @@ def ucitaj_ucionice(putanja_csv):
         }
     return ucionice
 
+def ucitaj_ogranicenja(putanja_csv):
+    df = pd.read_csv(putanja_csv)
+    
+    zelje = []
+    for _, r in df.iterrows():
+        tip = r["Tip"]
+        if tip == "Zelja":
+            opis = r["Opis"]
+            zelje.append(opis)
+    return zelje
+
 
