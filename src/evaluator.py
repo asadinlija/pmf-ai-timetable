@@ -40,3 +40,16 @@ def provjeri_h4(raspored, max_kapacitet_ucionice):
             ):
                 kazna += HARD_PENAL
     return kazna
+
+def provjeri_h5(raspored, ucionice):
+    kazna = 0
+    for i in range(len(raspored)):
+        a = raspored[i]
+        if a["tip"] == "LV":
+            if a["ucionica"]["kapacitet_lv_vjezbi"] < a["broj_studenata"]:
+                kazna += HARD_PENAL
+        else:
+            if a["ucionica"]["kapacitet_nastave"] < a["broj_studenata"]:
+                kazna += HARD_PENAL
+            
+    return kazna
