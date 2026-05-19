@@ -36,7 +36,6 @@ def provjeri_h4(raspored, max_kapacitet_ucionice):
                 and a["tip"] == b["tip"]
                 and a["termin"] != b["termin"]
                 and set(a["grupe"]) != set(b["grupe"])
-                and a["broj_studenata"] <= max_kapacitet_ucionice
             ):
                 kazna += HARD_PENAL
     return kazna
