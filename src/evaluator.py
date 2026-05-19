@@ -21,6 +21,22 @@ def provjeri_h3(raspored):
         for j in range(i+1, len(raspored)):
             a = raspored[i]
             b = raspored[j]
-            if set(a["grupe"]) & set(b["grupe"]) and a["termin"] == b["termin"]:
+            if (set(a["grupe"]) & set(b["grupe"])) and a["termin"] == b["termin"]:
+                kazna += HARD_PENAL
+    return kazna
+
+def provjeri_h4(raspored, max_kapacitet_ucionice):
+    kazna = 0
+    for i in range(len(raspored)):
+        for j in range(i+1, len(raspored)):
+            a = raspored[i]
+            b = raspored[j]
+            if(
+                a["predmet_id"] == b["predmet_id"]
+                and a["tip"] == b["tip"]
+                and a["termin"] != b["termin"]
+                and set(a["grupe"]) != set(b["grupe"])
+                and a["broj_studenata"] <= max_kapacitet_ucionice
+            ):
                 kazna += HARD_PENAL
     return kazna
