@@ -78,18 +78,18 @@ def ucitaj_aktivne_predmete(putanja_csv):
         naziv = r["predmet"]
         smjer = r["smjer"]
         broj = int(r["broj_studenata"])
-
+        godina = int(r["godina"])
         if pid not in agregirano:
             agregirano[pid] = {
                 "id": pid,
                 "glavni_naziv": naziv,
-                "smjerovi": {smjer},
+                "smjerovi": {(smjer, godina)},
                 "ukupno": broj,
                 "nazivi": {naziv.lower()}
             }
         else:
             agregirano[pid]["ukupno"] += broj
-            agregirano[pid]["smjerovi"].add(smjer)
+            agregirano[pid]["smjerovi"].add((smjer, godina))
             agregirano[pid]["nazivi"].add(naziv.lower())
 
     lookup = {}
