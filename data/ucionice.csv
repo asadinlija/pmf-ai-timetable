@@ -2,7 +2,7 @@ id,naziv,kapacitet_nastava,kapacitet_lv,tip
 A1,Amfiteatar Branko Galeb,156,0,amfiteatar
 S1,Sala 428,56,0,predavaonica
 S2,Sala 419,40,0,predavaonica
-K1,Kabinet 432,36,0,kabinet
+K1,Kabinet 432,42,0,kabinet
 K2,Kabinet 412,10,0,kabinet
 K3,Kabinet 406,3,0,kancelarija
 K4,Kabinet 450,10,0,kabinet
