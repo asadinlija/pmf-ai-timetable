@@ -16,6 +16,7 @@ def generisi_raspored(zaduzenja, ucionice):
             "predmet": z["predmet"],
             "tip": z["tip_nastave"],
             "nastavnik": z["nastavnik"],
+            "zvanje_nastavnika": z["zvanje"],
             "termin": termin,
             "ucionica": ucionica,
             "grupe": z["smjerovi"],

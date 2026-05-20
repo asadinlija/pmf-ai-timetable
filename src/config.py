@@ -2,7 +2,7 @@ import itertools
 DANI = ["Ponedjeljak", "Utorak", "Srijeda", "Četvrtak", "Petak"]
 SLOTOVI = list(range(1, 13))  
 TERMINI = list(itertools.product(DANI, SLOTOVI))
-TERMINI = [t for t in TERMINI if not (t[0] == "Četvrtak" and t[1] == 6)]
+REDOVNO_ZAPOSLENI = ["Redovni profesor", "Vanredni profesor", "Asistent", "Viši asistent", "Docent"]
 
 HARD_PENAL = 1000000
 TEZINE = {

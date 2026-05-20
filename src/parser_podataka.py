@@ -42,7 +42,7 @@ def parsiraj_fond(fond):
 def odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv):
     zvanje = str(zvanje).lower()
 
-    asistenti = ["asistent", "viši asistent", "v.asist", "asist", "stručni saradnik", "saradnik", "viši stručni saradnik"]
+    asistenti = ["asistent", "viši asistent", "stručni saradnik", "saradnik", "viši stručni saradnik"]
     je_asistent = any(a in zvanje for a in asistenti)
 
     aktivnosti = []

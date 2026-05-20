@@ -1,4 +1,4 @@
-from config import HARD_PENAL
+from config import HARD_PENAL, REDOVNO_ZAPOSLENI
 
 def provjeri_konflikt(raspored, polje):
     kazna = 0
@@ -87,4 +87,19 @@ def provjeri_h7(raspored, zaduzenja):
         stvarni_broj = brojac.get(kljuc, 0)
         if stvarni_broj != z["trajanje"]:
             kazna += HARD_PENAL
+    return kazna
+
+def provjeri_h8(raspored):
+    kazna = 0
+    for d in raspored:
+        if d["tip"] == "LV" and d["ucionica"]["tip_ucionice"] != "racunarski_kabinet":
+            kazna += HARD_PENAL
+    return kazna
+
+def provjeri_h9(raspored):
+    kazna = 0
+    for d in raspored:
+        if d["termin"] == ("Četvrtak", 6):
+            if any(r.lower() in d["zvanje_nastavnika"].lower() for r in REDOVNO_ZAPOSLENI):
+                kazna += HARD_PENAL
     return kazna
