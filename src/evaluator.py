@@ -74,3 +74,17 @@ def provjeri_h6(raspored, max_kapacitet_nastava, max_kapacitet_lv):
                     kazna += HARD_PENAL     
     return kazna
 
+def provjeri_h7(raspored, zaduzenja):
+    kazna = 0 
+    brojac = {}
+    for d in raspored:
+        kljuc = (d["predmet_id"], d["tip"])
+        if kljuc not in brojac:
+            brojac[kljuc] = 0
+        brojac[kljuc] += 1
+    for z in zaduzenja:
+        kljuc = (z["predmet_id"], z["tip_nastave"])
+        stvarni_broj = brojac.get(kljuc, 0)
+        if stvarni_broj != z["trajanje"]:
+            kazna += HARD_PENAL
+    return kazna
