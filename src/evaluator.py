@@ -124,7 +124,7 @@ def provjeri_s1(raspored):
             if kljuc not in raspored_grupe:
                 raspored_grupe[kljuc] = set()  
             raspored_grupe[kljuc].add(slot)
-            
+
     for kljuc, jedinstveni_slotovi in raspored_grupe.items():
         slotovi = sorted(list(jedinstveni_slotovi))
         for i in range(len(slotovi) - 1):
@@ -132,6 +132,37 @@ def provjeri_s1(raspored):
             if razlika > 1:
                 broj_praznih_sati = razlika - 1
                 kazna += broj_praznih_sati * TEZINE["S1"]
+    return kazna
+
+def provjeri_s2(raspored):
+    kazna = 0
+    raspored_grupe = {}
+    for d in raspored:
+        dan = d["termin"][0]
+        slot = d["termin"][1]
+
+        for grupa in d["grupe"]:
+            kljuc = (grupa, dan)
+            if kljuc not in raspored_grupe:
+                raspored_grupe[kljuc] = set()
+            raspored_grupe[kljuc].add(slot)
+    for kljuc, jedinstveni_slotovi in raspored_grupe.items():
+        slotovi = sorted(list(jedinstveni_slotovi))
+        if not slotovi:
+            continue
+        trenutna_duzina_niza = 1
+        for i in range(len(slotovi)-1):
+            if slotovi[i+1] - slotovi[i] == 1:
+                trenutna_duzina_niza += 1
+            else:
+                if trenutna_duzina_niza > 5:
+                    prekoracenje = trenutna_duzina_niza - 5
+                    kazna += prekoracenje * TEZINE["S2"]
+                trenutna_duzina_niza = 1
+        # provjera za zadnji niz      
+        if trenutna_duzina_niza > 5:
+            prekoracenje = trenutna_duzina_niza - 5
+            kazna += prekoracenje * TEZINE["S2"]
     return kazna
 
 
