@@ -1,4 +1,4 @@
-from config import HARD_PENAL, REDOVNO_ZAPOSLENI
+from config import HARD_PENAL, REDOVNO_ZAPOSLENI, TEZINE
 
 def provjeri_konflikt(raspored, polje):
     kazna = 0
@@ -6,6 +6,14 @@ def provjeri_konflikt(raspored, polje):
         for j in range(i+1, len(raspored)):
             a = raspored[i]
             b = raspored[j]
+
+            if polje == "ucionica":
+                vrijednost_a = a["ucionica"]["id"]
+                vrijednost_b = b["ucionica"]["id"]
+            else:
+                vrijednost_a = a[polje]
+                vrijednost_b = b[polje]
+
             if a[polje] == b[polje] and a["termin"] == b["termin"]:
                 kazna += HARD_PENAL
     return kazna
@@ -103,3 +111,30 @@ def provjeri_h9(raspored):
             if any(r.lower() in d["zvanje_nastavnika"].lower() for r in REDOVNO_ZAPOSLENI):
                 kazna += HARD_PENAL
     return kazna
+
+def provjeri_s1(raspored):
+    kazna = 0
+    raspored_grupe = {}
+    for d in raspored:
+        dan = d["termin"][0]
+        slot = d["termin"][1]
+        
+        for grupa in d["grupe"]:
+            kljuc = (grupa, dan)
+            if kljuc not in raspored_grupe:
+                raspored_grupe[kljuc] = set()  
+            raspored_grupe[kljuc].add(slot)
+            
+    for kljuc, jedinstveni_slotovi in raspored_grupe.items():
+        slotovi = sorted(list(jedinstveni_slotovi))
+        for i in range(len(slotovi) - 1):
+            razlika = slotovi[i+1] - slotovi[i]
+            if razlika > 1:
+                broj_praznih_sati = razlika - 1
+                kazna += broj_praznih_sati * TEZINE["S1"]
+    return kazna
+
+
+
+
+
