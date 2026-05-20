@@ -58,10 +58,13 @@ def provjeri_h6(raspored, max_kapacitet_nastava, max_kapacitet_lv):
         for j in range(i+1, len(raspored)):
             a = raspored[i]
             b = raspored[j]
+            # provjera: nastala je grupa, a nije bilo potrebe
+            # moze bit da su u razlicitim terminima, ista ucionica
+            # ili isti termin razlicite ucionice, uglavnom nastale su grupe
             if(
                 a["predmet_id"] == b["predmet_id"]
                 and a["tip"] == b["tip"]
-                and a["termin"] != b["termin"]
+                and not (a["termin"] == b["termin"] and a["ucionica"]["id"] == b["ucionica"]["id"])
             ):
                 if a["tip"] == "LV":
                     max_kap = max_kapacitet_lv
@@ -70,3 +73,4 @@ def provjeri_h6(raspored, max_kapacitet_nastava, max_kapacitet_lv):
                 if a["broj_studenata"] + b["broj_studenata"] <= max_kap:
                     kazna += HARD_PENAL     
     return kazna
+
