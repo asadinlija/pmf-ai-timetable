@@ -2,7 +2,8 @@ import itertools
 DANI = ["Ponedjeljak", "Utorak", "Srijeda", "Četvrtak", "Petak"]
 SLOTOVI = list(range(1, 13))  
 TERMINI = list(itertools.product(DANI, SLOTOVI))
-REDOVNO_ZAPOSLENI = ["Redovni profesor", "Vanredni profesor", "Asistent", "Viši asistent", "Docent"]
+REDOVNO_ZAPOSLENI = ["Redovni profesor", "Redovna profesorica", "Vanredni profesor", "Vanredna profesorica", "Asistent",
+                      "Viši asistent", "Viša asistentica", "Asistentica", "Docent", "Docentica"]
 
 HARD_PENAL = 1000000
 TEZINE = {

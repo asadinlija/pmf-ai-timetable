@@ -11,3 +11,4 @@ class Predmet:
 
         self.predavanja = 0
         self.vjezbe = 0
+        # provjeriti kod kuce

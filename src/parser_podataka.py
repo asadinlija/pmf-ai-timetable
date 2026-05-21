@@ -46,7 +46,7 @@ def odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv):
     je_asistent = any(a in zvanje for a in asistenti)
 
     aktivnosti = []
-
+    # aleksandar nije izbacilo za lv, popravi 
     if fond_p > 0:
         tip = "AV" if je_asistent else "P"
         aktivnosti.append({"tip": tip, "trajanje": fond_p})
