@@ -1,4 +1,4 @@
-from config import HARD_PENAL, REDOVNO_ZAPOSLENI, TEZINE
+from config import HARD_PENAL, REDOVNO_ZAPOSLENI, TEZINE, DANI
 
 def provjeri_konflikt(raspored, polje):
     kazna = 0
@@ -164,6 +164,41 @@ def provjeri_s2(raspored):
             prekoracenje = trenutna_duzina_niza - 5
             kazna += prekoracenje * TEZINE["S2"]
     return kazna
+
+def provjeri_s3(raspored):
+    kazna = 0
+    opterecenje_grupa = {}
+    for d in raspored:
+        dan = d["termin"][0]
+        for grupa in d["grupe"]:
+            if grupa not in opterecenje_grupa:
+                opterecenje_grupa[grupa] = {dan: 0 for dan in DANI}
+            if dan in opterecenje_grupa[grupa]:
+                opterecenje_grupa[grupa][dan] += 1
+    for grupa, dani_r in opterecenje_grupa.items():
+        ukupan_fond = sum(dani_r.values())
+        idealno = ukupan_fond / 5.0
+        for dan in DANI:
+            stvarno_sati = dani_r[dan]
+            odstupanje = abs(stvarno_sati - idealno)
+            kazna += odstupanje * TEZINE["S3"]
+    return kazna
+
+def provjeri_s4(raspored):
+    kazna = 0
+    raspored_master_studenti = {}
+    GRANICA_POPODNE = 7
+    for d in raspored:
+        slot = d["termin"][1]
+        je_master = False
+        for (smjer, godina) in d["grupe"]:
+            if godina >= 4:
+                je_master = True
+                break
+        if je_master and slot < GRANICA_POPODNE:
+            kazna += TEZINE["S4"]
+    return kazna
+
 
 
 
