@@ -68,7 +68,7 @@ def provjeri_h6(raspored, max_kapacitet_nastava, max_kapacitet_lv):
             b = raspored[j]
             # provjera: nastala je grupa, a nije bilo potrebe
             # moze bit da su u razlicitim terminima, ista ucionica
-            # ili isti termin razlicite ucionice, uglavnom nastale su grupe
+            # ili isti termin razlicite ucionice...uglavnom nastale su grupe
             if(
                 a["predmet_id"] == b["predmet_id"]
                 and a["tip"] == b["tip"]
@@ -197,6 +197,28 @@ def provjeri_s4(raspored):
                 break
         if je_master and slot < GRANICA_POPODNE:
             kazna += TEZINE["S4"]
+    return kazna
+    
+def termin_u_broj(termin):
+    dan_index = DANI.index(termin[0])
+    # imamo 12 slotova u jednom danu pa na ovaj nacin svaki termin u svakom danu dobije jedinstven broj
+    return dan_index*12 + termin[1]
+ 
+def provjeri_s5(raspored):
+    kazna = 0
+    termini_po_predmetu = {}
+    for d in raspored:
+        pid = d["predmet_id"]
+        for grupa in d["grupe"]:
+            kljuc = (grupa, pid)
+            if pid not in termini_po_predmetu:
+                termini_po_predmetu[kljuc] = {"P": [], "AV": [], "LV": []}
+            termini_po_predmetu[kljuc][d["tip"]].append(d["termin"])
+    for kljuc, tipovi in termini_po_predmetu.items():
+        for p_termin in tipovi["P"]:
+            for v_termin in tipovi["AV"] + tipovi["LV"]:
+                if termin_u_broj(p_termin) > termin_u_broj(v_termin):
+                    kazna += TEZINE["S5"]
     return kazna
 
 
