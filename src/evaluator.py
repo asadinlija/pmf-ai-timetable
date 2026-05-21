@@ -260,7 +260,19 @@ def provjeri_s7(raspored):
         if slot in RANIJI_SLOTOVI:
             kazna += TEZINE["S7"]
     return kazna
-        
+
+def provjeri_s8(raspored):
+    kazna = 0
+    for d in raspored:
+        predmet = d["predmet"]
+        if predmet == "Programiranje I" and d["tip"] == "LV":
+            if d["ucionica"]["id"] != "A1":
+                kazna += TEZINE["S8"]
+    return kazna
+
+
+
+
 
 
 
