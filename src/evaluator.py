@@ -221,6 +221,9 @@ def provjeri_s5(raspored):
                     kazna += TEZINE["S5"]
     return kazna
 
+def provjeri_redovno_zaposlenje(nastavnik):
+    return any(r.lower() in nastavnik.lower() for r in REDOVNO_ZAPOSLENI)
+
 def provjeri_s6(raspored):
     kazna = 0
     raspored_nastavnici = {}
@@ -229,8 +232,7 @@ def provjeri_s6(raspored):
         # ako je naprimjer strucni saradnik, oni obicno rade negdje
         # pa mogu doci naprimjer od 8 do 10 nesto da odrze pa 16h do 18h naprimjer
         # jer njima to zbog posla vise odgovara, pa nema potrebe da tada kaznjavamo 
-        je_redovan = any(r.lower() in d["zvanje_nastavnika"].lower() for r in REDOVNO_ZAPOSLENI)
-        if not je_redovan:
+        if not provjeri_redovno_zaposlenje(d["nastavnik"]):
             continue
         dan = d["termin"][0]
         slot = d["termin"][1]
@@ -247,7 +249,19 @@ def provjeri_s6(raspored):
                 kazna += broj_praznih_sati * TEZINE["S6"]
     return kazna
 
-#def provjeri_s7(raspored):
+def provjeri_s7(raspored):
+    kazna = 0
+    RANIJI_SLOTOVI = [1, 2, 3, 4, 5, 6, 7, 8]
+    raspored_saradnici = {}
+    for d in raspored:
+        slot = d["termin"][1]
+        if provjeri_redovno_zaposlenje(d["nastavnik"]):
+            continue
+        if slot in RANIJI_SLOTOVI:
+            kazna += TEZINE["S7"]
+    return kazna
+        
+
 
 
 
