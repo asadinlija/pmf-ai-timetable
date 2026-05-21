@@ -270,6 +270,10 @@ def provjeri_s8(raspored):
                 kazna += TEZINE["S8"]
     return kazna
 
+# za zelje nastaviti poslije predavanja
+# bit ce potrebne pomocne funkcije
+# provjere moramo pregledati po profesoru
+#def provjeri_s9(raspored):
 
 
 
