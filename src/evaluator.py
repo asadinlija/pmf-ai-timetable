@@ -221,6 +221,34 @@ def provjeri_s5(raspored):
                     kazna += TEZINE["S5"]
     return kazna
 
+def provjeri_s6(raspored):
+    kazna = 0
+    raspored_nastavnici = {}
+    for d in raspored:
+        # ako je redovan nastavnik onda kaznjavamo
+        # ako je naprimjer strucni saradnik, oni obicno rade negdje
+        # pa mogu doci naprimjer od 8 do 10 nesto da odrze pa 16h do 18h naprimjer
+        # jer njima to zbog posla vise odgovara, pa nema potrebe da tada kaznjavamo 
+        je_redovan = any(r.lower() in d["zvanje_nastavnika"].lower() for r in REDOVNO_ZAPOSLENI)
+        if not je_redovan:
+            continue
+        dan = d["termin"][0]
+        slot = d["termin"][1]
+        kljuc = (d["nastavnik"], dan)
+        if kljuc not in raspored_nastavnici:
+            raspored_nastavnici[kljuc] = set()
+        raspored_nastavnici[kljuc].add(slot)
+    for kljuc, jedinstveni_slotovi in raspored_nastavnici.items():
+        slotovi = sorted(list(jedinstveni_slotovi))
+        for i in range(len(slotovi)-1):
+            razlika = slotovi[i+1] - slotovi[i]
+            if razlika > 1:
+                broj_praznih_sati = razlika - 1
+                kazna += broj_praznih_sati * TEZINE["S6"]
+    return kazna
+
+#def provjeri_s7(raspored):
+
 
 
 
