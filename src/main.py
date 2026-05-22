@@ -8,6 +8,6 @@ zelje = ucitaj_ogranicenja("data/ogranicenja.csv")
 
 raspored = generisi_raspored(zaduzenja, ucionice)
 kazna = evaluiraj_raspored(raspored, zaduzenja, ucionice)
-print(f"Početna kazna: {kazna}")
+print(f"Pocetna kazna: {kazna}")
 print(raspored)
 
