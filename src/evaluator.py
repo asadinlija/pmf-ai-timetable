@@ -269,13 +269,65 @@ def provjeri_s8(raspored):
             if d["ucionica"]["id"] != "A1":
                 kazna += TEZINE["S8"]
     return kazna
+def procijeni_dane_i_sate(dani_profesora, dozvoljeni_dani=None, zabranjeni_dani=None, min_slot=None, max_slot=None):
+    prekrsaji = 0
+    for dan, slotovi in dani_profesora.items():
+        if dozvoljeni_dani and dan not in dozvoljeni_dani:
+            prekrsaji += len(slotovi)
+            continue
+        if zabranjeni_dani and dan in zabranjeni_dani:
+            prekrsaji += len(slotovi)
+            continue
+        
+        for slot in slotovi:
+            if min_slot and slot < min_slot:
+                prekrsaji += 1
+            if max_slot and slot > max_slot:
+                prekrsaji += 1
+    return prekrsaji
 
-# za zelje nastaviti poslije predavanja
-# bit ce potrebne pomocne funkcije
-# provjere moramo pregledati po profesoru
-#def provjeri_s9(raspored):
+def procijeni_broj_radnih_dana(dani_profesora, max_dana):
+    radni_dani = len([d for d, s in dani_profesora.items() if len(s) > 0])
+    if radni_dani > max_dana:
+        return (radni_dani - max_dana) 
+    return 0
 
+def procijeni_rad_u_bloku(dani_profesora):
+    prekrsaji = 0
+    for dan, jedinstveni_slotovi in dani_profesora.items():
+        if not jedinstveni_slotovi:
+            continue
+        slotovi = sorted(list(jedinstveni_slotovi))
+        for i in range(len(slotovi)-1):
+            razlika = slotovi[i+1] -  slotovi[i]
+            if razlika > 1:
+                prekrsaji += (razlika - 1)
+    return prekrsaji
 
+def provjeri_s9(raspored):
+    kazna = 0
+    raspored_profesora = {}
+    casovi_profesora = {}
+
+    for d in raspored:
+        prof = d["nastavnik"]
+        dan = d["termin"][0]
+        slot = d["termin"][1]
+
+        if prof not in raspored_profesora:
+            raspored_profesora[prof] = {dan: set() for dan in DANI}
+            casovi_profesora[prof] = []
+        if dan in DANI:
+            raspored_profesora[prof][dan].add(slot)
+            casovi_profesora[prof].append(d)
+    for prof, dani in raspored_profesora.items():
+        prekrsaji = 0
+
+        if prof == "Senada Kalabusic":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak", "Srijeda"], max_slot=4)
+        elif prof == "Amela Muratovic-Ribic":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Ponedjeljak", "Utorak", "Srijeda"])
+            
 
 
 

@@ -39,21 +39,59 @@ def parsiraj_fond(fond):
         return 0, 0, 0
 
 
-def odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv):
-    zvanje = str(zvanje).lower()
+def izvuci_tip_iz_naziva(naziv):
+    naziv_upper = naziv.upper()
+    if "(P+LV)" in naziv_upper:
+        return "P+LV"
+    if "(P+AV)" in naziv_upper:
+        return "P+AV"
+    if "(LV)" in naziv_upper:
+        return "LV"
+    if "(AV)" in naziv_upper:
+        return "AV"
+    if "(P)" in naziv_upper:
+        return "P"
+    return None
 
-    asistenti = ["asistent", "viši asistent", "stručni saradnik", "saradnik", "viši stručni saradnik"]
-    je_asistent = any(a in zvanje for a in asistenti)
-
+def odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv, naziv_predmeta=""):
+    zvanje_lower = str(zvanje).lower()
+    asistenti = ["asistent", "asistentica", "viši asistent", "viša asistentica", 
+                 "stručni saradnik", "stručna saradnica", "saradnik", "saradnica",
+                 "viši stručni saradnik", "viša stručna saradnica"]
+    je_asistent = any(a in zvanje_lower for a in asistenti)
+    
+    tip_iz_naziva = izvuci_tip_iz_naziva(naziv_predmeta)
     aktivnosti = []
-    # aleksandar nije izbacilo za lv, popravi 
-    if fond_p > 0:
-        tip = "AV" if je_asistent else "P"
-        aktivnosti.append({"tip": tip, "trajanje": fond_p})
-    if fond_av > 0:
-        aktivnosti.append({"tip": "AV", "trajanje": fond_av})
-    if fond_lv > 0:
-        aktivnosti.append({"tip": "LV", "trajanje": fond_lv})
+
+    if tip_iz_naziva == "LV":
+        if fond_p > 0:
+            aktivnosti.append({"tip": "LV", "trajanje": fond_p})
+    elif tip_iz_naziva == "AV":
+        if fond_p > 0:
+            aktivnosti.append({"tip": "AV", "trajanje": fond_p})
+    elif tip_iz_naziva == "P+LV":
+        if fond_p > 0:
+            aktivnosti.append({"tip": "P", "trajanje": fond_p})
+        if fond_av > 0:
+            aktivnosti.append({"tip": "LV", "trajanje": fond_av})
+    elif tip_iz_naziva == "P+AV":
+        if fond_p > 0:
+            aktivnosti.append({"tip": "P", "trajanje": fond_p})
+        if fond_av > 0:
+            aktivnosti.append({"tip": "AV", "trajanje": fond_av})
+    elif tip_iz_naziva == "P":
+        if fond_p > 0:
+            aktivnosti.append({"tip": "P", "trajanje": fond_p})
+    else:
+        # Nema oznake u nazivu
+        if fond_p > 0:
+            tip = "AV" if je_asistent else "P"
+            aktivnosti.append({"tip": tip, "trajanje": fond_p})
+        if fond_av > 0:
+            tip = "LV" if je_asistent else "AV"
+            aktivnosti.append({"tip": tip, "trajanje": fond_av})
+        if fond_lv > 0:
+            aktivnosti.append({"tip": "LV", "trajanje": fond_lv})
 
     return aktivnosti
 
@@ -153,7 +191,7 @@ def ucitaj_zaduzenja(putanja_excel, putanja_csv):
             continue
 
     
-        tipovi = odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv)
+        tipovi = odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv, predmet)
 
         for t in tipovi:
             key = (profesor, info["id"], t["tip"])
