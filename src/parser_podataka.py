@@ -176,10 +176,7 @@ def ucitaj_zaduzenja(putanja_excel, putanja_csv):
 
         linije = [x.strip() for x in profesor_raw.split("\n") if x.strip()]
         if len(linije) > 0:
-            profesor = linije[0]
-            if len(linije) > 1:
-                oblast = linije[-1]
-                profesor = f"{profesor} ({oblast})"
+            profesor = linije[0].strip(',').strip()
         else:
             continue
 
@@ -222,11 +219,11 @@ if __name__ == "__main__":
 
 def ucitaj_ucionice(putanja_csv):
     df = pd.read_csv(putanja_csv)
-
-    df["id"] = pd.to_numeric(df["id"], errors="coerce")
     ucionice = {}
     for _, r in df.iterrows():
-        uid = int(r["id"])
+        if pd.isna(r["id"]):
+            continue
+        uid = r["id"].strip()
         naziv = r["naziv"]
         nkapacitet = r["kapacitet_nastava"]
         lvkapacitet = r["kapacitet_lv"]

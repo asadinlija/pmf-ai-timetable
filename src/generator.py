@@ -10,6 +10,9 @@ def generisi_raspored(zaduzenja, ucionice):
             dostupne = [u for u in list(ucionice.values()) if u["tip_ucionice"] == "racunarski_kabinet"]
         else:
             dostupne = list(ucionice.values())
+        if not dostupne:
+            print(f"Nema dostupnih učionica za: {z['predmet']} - {z['tip_nastave']}")
+            continue
         ucionica = rand.choice(dostupne)
         raspored.append({
             "predmet_id": z["predmet_id"],

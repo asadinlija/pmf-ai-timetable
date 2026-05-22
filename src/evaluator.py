@@ -14,7 +14,7 @@ def provjeri_konflikt(raspored, polje):
                 vrijednost_a = a[polje]
                 vrijednost_b = b[polje]
 
-            if a[polje] == b[polje] and a["termin"] == b["termin"]:
+            if vrijednost_a == vrijednost_b and a["termin"] == b["termin"]:
                 kazna += HARD_PENAL
     return kazna
 
@@ -33,7 +33,7 @@ def provjeri_h3(raspored):
                 kazna += HARD_PENAL
     return kazna
 
-def provjeri_h4(raspored, max_kapacitet_ucionice):
+def provjeri_h4(raspored):
     kazna = 0
     for i in range(len(raspored)):
         for j in range(i+1, len(raspored)):
@@ -211,7 +211,7 @@ def provjeri_s5(raspored):
         pid = d["predmet_id"]
         for grupa in d["grupe"]:
             kljuc = (grupa, pid)
-            if pid not in termini_po_predmetu:
+            if kljuc not in termini_po_predmetu:
                 termini_po_predmetu[kljuc] = {"P": [], "AV": [], "LV": []}
             termini_po_predmetu[kljuc][d["tip"]].append(d["termin"])
     for kljuc, tipovi in termini_po_predmetu.items():
@@ -315,7 +315,7 @@ def provjeri_s9(raspored):
         slot = d["termin"][1]
 
         if prof not in raspored_profesora:
-            raspored_profesora[prof] = {dan: set() for dan in DANI}
+            raspored_profesora[prof] = {d: set() for d in DANI}
             casovi_profesora[prof] = []
         if dan in DANI:
             raspored_profesora[prof][dan].add(slot)
@@ -323,12 +323,173 @@ def provjeri_s9(raspored):
     for prof, dani in raspored_profesora.items():
         prekrsaji = 0
 
-        if prof == "Senada Kalabusic":
+        if prof == "Senada Kalabušić":
             prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak", "Srijeda"], max_slot=4)
-        elif prof == "Amela Muratovic-Ribic":
+        elif prof == "Amela Muratović-Ribić":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Ponedjeljak", "Utorak", "Srijeda"])
+        elif prof == "Esmir Pilav":
+            prekrsaji += procijeni_dane_i_sate(dani, zabranjeni_dani=["Petak"], max_slot=6)
+            
+        # Z4: Almasa Odzak: u 2 dana, od 10h do 16h (slot 3 do slot 9)
+        elif prof == "Almasa Odžak":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=2)
+            prekrsaji += procijeni_dane_i_sate(dani, min_slot=3, max_slot=9)
+            
+        # Z5: Dzenan Gusic: pon, uto, sri ujutro (do 12h -> max slot 4)
+        elif prof == "Dženan Gušić":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Ponedjeljak", "Utorak", "Srijeda"], max_slot=4)
+            
+        # Z6: Hasnija Nurkovic: u blokovima, maksimalno 2 dana sedmicno
+        elif prof == "Hasnija Nurković":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=2)
+            prekrsaji += procijeni_rad_u_bloku(dani)
+            
+        # Z7: Adis Alihodzic: uto, sri, čet. Pon slobodan.
+        elif prof == "Adis Alihodžić":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak", "Srijeda", "Četvrtak"])
+            
+        # Z8: Fikret Cunjalo: bez petka, prijepodne (do 12h ili 13h, uzećemo max_slot=5)
+        elif prof == "Fikret Čunjalo":
+            prekrsaji += procijeni_dane_i_sate(dani, zabranjeni_dani=["Petak"], max_slot=5)
+            
+        # Z9: Elmedin Selmanovic
+        elif prof == "Elmedin Selmanović":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Ponedjeljak", "Četvrtak"], min_slot=2)
+            
+            dani_ciklusa = {} 
+            for d in casovi_profesora[prof]:
+                dan_casa = d["termin"][0]
+                slot_casa = d["termin"][1]
+                
+                if d["predmet_id"] == "77" and dan_casa != "Četvrtak":
+                    prekrsaji += 1
+                
+                if d["ucionica"]["id"] == "R2":
+                    prekrsaji += 0.5 
+                
+                if dan_casa not in dani_ciklusa:
+                    dani_ciklusa[dan_casa] = set()
+
+                for grupa in d["grupe"]:
+                    godina = grupa[1]
+                    ciklus = 2 if godina >= 4 else 1
+                    dani_ciklusa[dan_casa].add(ciklus)
+            
+            for dan_ime, ciklusi in dani_ciklusa.items():
+                if len(ciklusi) > 1:
+                    prekrsaji += 2
+
+        # Z10: Zenan Sabanac: sri i čet, ne prije 9h (min_slot=2)
+        elif prof == "Zenan Šabanac":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Srijeda", "Četvrtak"], min_slot=2)
+            
+        # Z11: Manuela Muzika Dizdarevic: utorak i petak
+        elif prof == "Manuela Muzika Dizdarević":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak", "Petak"])
+            
+        # Z12: Damir Hasic: u 2 dana tokom sedmice
+        elif prof == "Damir Hasić":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=2)
+            
+        # Z13: Dina Kamber Hamzic: uto, sri, čet prijepodne (max_slot=5)
+        elif prof == "Dina Kamber Hamzić":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak", "Srijeda", "Četvrtak"], max_slot=5)
+            
+        # Z14: Amil Pecenkovic: od 10h do 15h (slot 3 do 8), petak slobodan
+        elif prof == "Amil Pečenkovic":
+            prekrsaji += procijeni_dane_i_sate(dani, zabranjeni_dani=["Petak"], min_slot=3, max_slot=8)
+            
+        # Z15: Medina Zubaca: pon, uto, sri
+        elif prof == "Medina Zubača":
             prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Ponedjeljak", "Utorak", "Srijeda"])
             
+        # Z16: Franjo Sarcevic: bez ponedjeljka, do 15h (max_slot=8)
+        elif prof == "Franjo Šarčević":
+            prekrsaji += procijeni_dane_i_sate(dani, zabranjeni_dani=["Ponedjeljak"], max_slot=8)
+            
+        # Z17: Emin Beso: uto i čet, ne prije 9h (min_slot=2)
+        elif prof == "Emin Bešo":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak", "Četvrtak"], min_slot=2)
+            
+        # Z18: Sead Delalic: ponedjeljak, ne prije 12h (min_slot=5). Preferira sale ABG ili VRC.
+        elif prof == "Sead Delalić":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Ponedjeljak"], min_slot=5)
+            for d in casovi_profesora[prof]:
+                if d["ucionica"]["id"] not in ["A1", "R2"]: 
+                    prekrsaji += 0.5
+                    
+        # Z19: Aleksandra Kostic: nastavu u jednom danu
+        elif prof == "Aleksandra Kostić":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=1)
+            
+        # Z20: Lejla Smajlovic: u jednom bloku, maksimalno 2 dana
+        elif prof == "Lejla Smajlović":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=2)
+            prekrsaji += procijeni_rad_u_bloku(dani)
+            
+        # Z21: Samir Ribic: u jednom bloku, 1 do 2 dana
+        elif prof == "Samir Ribić":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=2)
+            prekrsaji += procijeni_rad_u_bloku(dani)
+            
+        # Z22: Emil Ilic-Georgijevic: u jednom danu
+        elif prof == "Emil Ilić-Georgijević":
+            prekrsaji += procijeni_broj_radnih_dana(dani, max_dana=1)
+            
+        # Z23: Vedad Letic: stručnjak iz prakse, od 16h nadalje (slot 9+)
+        elif prof == "Vedad Letić":
+            prekrsaji += procijeni_dane_i_sate(dani, min_slot=9)
+            
+        # Z24: Eldina Delalic: od 14h nadalje (slot 7+)
+        elif prof == "Eldina Delalić":
+            prekrsaji += procijeni_dane_i_sate(dani, min_slot=7)
+            
+        # Z25: Imrana Ridzal: iza 15h (slot 8+)
+        elif prof == "Imrana Ridžal":
+            prekrsaji += procijeni_dane_i_sate(dani, min_slot=8)
+            
+        # Z26: Kemal Altwlkany: utorak popodne (utorak, slot 7+)
+        elif prof == "Kemal Altwlkany":
+            prekrsaji += procijeni_dane_i_sate(dani, dozvoljeni_dani=["Utorak"], min_slot=7)
 
+        kazna += prekrsaji * TEZINE["S9"]
+        
+    return kazna
+
+def evaluiraj_raspored(raspored, zaduzenja, ucionice):
+    max_kapacitet_nastava = max(u["kapacitet_nastave"] for u in ucionice.values() 
+                           if u["tip_ucionice"] != "racunarski_kabinet")
+
+    max_kapacitet_lv = max(u["kapacitet_lv_vjezbi"] for u in ucionice.values() 
+                      if u["tip_ucionice"] == "racunarski_kabinet")
+    ukupna_tvrda_kazna = 0
+    ukupna_meka_kazna = 0
+
+    ukupna_tvrda_kazna += provjeri_h1(raspored)       
+    ukupna_tvrda_kazna += provjeri_h2(raspored)      
+    ukupna_tvrda_kazna += provjeri_h3(raspored)      
+    ukupna_tvrda_kazna += provjeri_h4(raspored)       
+    ukupna_tvrda_kazna += provjeri_h5(raspored, ucionice) 
+    ukupna_tvrda_kazna += provjeri_h6(raspored, max_kapacitet_nastava, max_kapacitet_lv) 
+    ukupna_tvrda_kazna += provjeri_h7(raspored, zaduzenja) 
+    ukupna_tvrda_kazna += provjeri_h8(raspored)       
+    ukupna_tvrda_kazna += provjeri_h9(raspored)      
+
+
+    ukupna_meka_kazna += provjeri_s1(raspored)        
+    ukupna_meka_kazna += provjeri_s2(raspored)       
+    ukupna_meka_kazna += provjeri_s3(raspored)       
+    ukupna_meka_kazna += provjeri_s4(raspored)        
+    ukupna_meka_kazna += provjeri_s5(raspored)        
+    ukupna_meka_kazna += provjeri_s6(raspored)        
+    ukupna_meka_kazna += provjeri_s7(raspored)        
+    ukupna_meka_kazna += provjeri_s8(raspored)        
+    ukupna_meka_kazna += provjeri_s9(raspored)       
+
+
+    ukupna_kazna = ukupna_tvrda_kazna  + ukupna_meka_kazna
+
+    return ukupna_kazna
 
 
 
