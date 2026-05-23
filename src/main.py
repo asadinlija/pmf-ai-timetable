@@ -2,6 +2,7 @@ from parser_podataka import ucitaj_zaduzenja, ucitaj_ucionice, ucitaj_ogranicenj
 from generator import generisi_raspored
 from evaluator import evaluiraj_raspored, debug_hard
 from algorithms.sa_algorithm import pokreni_simulated_annealing
+from algorithms.abc_algorithm import pokreni_abc
 from config import HARD_PENAL
 
 zaduzenja = ucitaj_zaduzenja("data/zaduzenja.xlsx", "data/predmeti.csv")
@@ -24,8 +25,16 @@ raspored_ljetni = generisi_raspored(zaduzenja_ljetni, ucionice)
 kazna_ljetni = evaluiraj_raspored(raspored_ljetni, zaduzenja_ljetni, ucionice)
 print(f"Pocetna kazna: {kazna_ljetni}")
 
-#print(raspored)
+najbolji_raspored_zimski, finalna_kazna_zimski = pokreni_abc(
+    zaduzenja_zimski, 
+    ucionice,
+    broj_kolonije=40,
+    limit = 80,
+    max_iteracija=1000
+)
 
+#print(raspored)
+'''
 najbolji_raspored_zimski, finalna_kazna_zimski = pokreni_simulated_annealing(
     zaduzenja_zimski, 
     ucionice,
@@ -58,3 +67,4 @@ print(f"Hard kršenja: {hard_krsenja_ljetni}")
 print(f"Soft kazna: {soft_kazna_ljetni:.0f}")
 debug_hard(najbolji_raspored_ljetni, zaduzenja_ljetni, ucionice)
 
+'''
