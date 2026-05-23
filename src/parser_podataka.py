@@ -1,14 +1,19 @@
 import pandas as pd
 import re
 
+ISKLJUCI = ["geografija", "hemija", "fizika", "biologija"]
+KOREKCIJE_FONDA = {
+    ("Programiranje I", "LV"): (2, 2, 0),  # ispravni P, AV, LV
+    ("Operaciona istraživanja", "AV"): (0, 2, 0),
+}
 
 def ocisti_naziv_predmeta(naziv):
+    naziv_lower = naziv.lower()
+    if any(x in naziv_lower for x in ISKLJUCI):
+        return "__iskljucen__"  
     naziv = str(naziv).strip()
-    
     naziv = re.sub(r'\s*\([^)]+\)\s*$', '', naziv)
-    
     return naziv.strip().lower()
-
 
 def parsiraj_fond(fond):
     if pd.isna(fond):
@@ -159,6 +164,8 @@ def ucitaj_zaduzenja(putanja_excel, putanja_csv):
             continue
 
         predmet = str(r[5]).strip()
+        if len(predmet) < 3:
+            continue
         if "ZADUŽENJA" in predmet or predmet == "Predmet":
             continue
 
@@ -182,7 +189,7 @@ def ucitaj_zaduzenja(putanja_excel, putanja_csv):
 
         fond_p, fond_av, fond_lv = parsiraj_fond(r[7])
 
-
+    
         if fond_p == 0 and fond_av == 0 and fond_lv == 0:
             print(f"Preskočeno zbog fonda 0: {predmet} (Vrijednost u Excelu: {r[7]})")
             continue
@@ -191,6 +198,11 @@ def ucitaj_zaduzenja(putanja_excel, putanja_csv):
         tipovi = odredi_tipove_nastave(zvanje, fond_p, fond_av, fond_lv, predmet)
 
         for t in tipovi:
+            if "programiranje i" in predmet_lower and t["tip"] == "LV":
+                t["trajanje"] = 2
+
+            if "operaciona" in predmet_lower and t["tip"] == "AV":
+                t["trajanje"] = 2
             key = (profesor, info["id"], t["tip"])
             if key in seen:
                 continue
