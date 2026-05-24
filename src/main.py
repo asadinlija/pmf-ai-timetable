@@ -25,12 +25,12 @@ raspored_ljetni = generisi_raspored(zaduzenja_ljetni, ucionice)
 kazna_ljetni = evaluiraj_raspored(raspored_ljetni, zaduzenja_ljetni, ucionice)
 print(f"Pocetna kazna: {kazna_ljetni}")
 
-najbolji_raspored_zimski, finalna_kazna_zimski = pokreni_abc(
-    zaduzenja_zimski, 
+najbolji_raspored, finalna_kazna_ljetni = pokreni_abc(
+    zaduzenja_ljetni, 
     ucionice,
-    broj_kolonije=40,
-    limit = 80,
-    max_iteracija=1000
+    broj_kolonije=20,
+    limit = 50,
+    max_iteracija=700
 )
 
 #print(raspored)

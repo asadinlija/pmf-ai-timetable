@@ -53,8 +53,6 @@ def pokreni_abc(zaduzenja, ucionice, broj_kolonije=20, limit=50, max_iteracija=5
                 odabrana["brojac"] = 0
             else:
                 odabrana["brojac"] += 1
-
-
         # scout bees faza
         for pcela in kolonija:
             if pcela["brojac"] > limit:
@@ -67,22 +65,6 @@ def pokreni_abc(zaduzenja, ucionice, broj_kolonije=20, limit=50, max_iteracija=5
         if trenutno_najbolje["kazna"] < najbolja_kazna:
             najbolja_kazna = trenutno_najbolje["kazna"]
             najbolji_raspored = copy.deepcopy(trenutno_najbolje["raspored"])
-        
-        # --- CLAUDE-OV RESTART TRIK ---
-        if najbolja_kazna == prethodna_najbolja:
-            brojac_stagnacije += 1
-        else:
-            brojac_stagnacije = 0
-            prethodna_najbolja = najbolja_kazna
-
-        if brojac_stagnacije > 100:
-            print("KOLONIJA ZAGLAVLJENA! Resetujem pola rješenja...")
-            for j in range(broj_kolonije // 2):
-                novi_rasp = generisi_raspored(zaduzenja, ucionice)
-                kolonija[j]["raspored"] = novi_rasp
-                kolonija[j]["kazna"] = evaluiraj_raspored(novi_rasp, zaduzenja, ucionice)
-                kolonija[j]["brojac"] = 0
-                brojac_stagnacije = 0
         if i % 50 == 0:
             print(f"Iteracija {i} | Najbolja kazna: {najbolja_kazna}")
     
