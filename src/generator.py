@@ -18,7 +18,7 @@ def generisi_raspored(zaduzenja, ucionice):
             if dostupne:
                 max_kap_lv = max(u["kapacitet_lv_vjezbi"] for u in dostupne)
                 broj_grupa = ceil(z["broj_studenata"] / max_kap_lv) if max_kap_lv > 0 else 1
-                # Koristimo ceil da osiguramo da kapacitet nigdje ne pukne
+                # koristimo ceil da osiguramo da kapacitet nigdje ne pukne
                 studenti_po_grupi = ceil(z["broj_studenata"] / broj_grupa)
             else:
                 broj_grupa = 1
@@ -29,7 +29,7 @@ def generisi_raspored(zaduzenja, ucionice):
             studenti_po_grupi = z["broj_studenata"]
             dostupne = list(ucionice.values())
 
-        # PRVO VRTIMO GRUPE
+        # prvo vrtimo grupe
         for g in range(broj_grupa):
             # Svaka grupa dobija svoje slotove u zavisnosti od trajanja predmeta
             for _ in range(z["trajanje"]):
@@ -37,7 +37,7 @@ def generisi_raspored(zaduzenja, ucionice):
                 ucionica = rand.choice(dostupne)
                 
                 raspored.append({
-                    # FIX 1: Dodajemo oznaku grupe u ID da evaluator broji fond ZA SVAKU GRUPU POSEBNO
+                    # Dodajemo oznaku grupe u ID da evaluator broji fond za svaku grupu posebno
                     "predmet_id": f"{z['predmet_id']}_G{g+1}" if broj_grupa > 1 else z["predmet_id"],
                     "predmet_id_orig": z["predmet_id"],
                     "predmet": f"{z['predmet']} - G{g+1}" if broj_grupa > 1 else z["predmet"],
@@ -48,7 +48,7 @@ def generisi_raspored(zaduzenja, ucionice):
                     "ucionica": ucionica,
                     "grupe": z["smjerovi"],
                     "broj_studenata": studenti_po_grupi,
-                    "trajanje": z["trajanje"] # Fond sati koji drži ova konkretna grupa
+                    "trajanje": z["trajanje"] 
                 })
                 
     return raspored

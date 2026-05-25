@@ -6,7 +6,6 @@ from generator import generisi_raspored
 from evaluator import evaluiraj_raspored
 
 def daj_susjedni_raspored(trenutni_raspored, ucionice):
-    # Koristimo listu sa kopiranim rječnicima na ulazu da budemo 100% sigurni
     novi_raspored = [cas.copy() for cas in trenutni_raspored]
     
     indeks_prvog = random.randint(0, len(novi_raspored) - 1)
@@ -14,7 +13,6 @@ def daj_susjedni_raspored(trenutni_raspored, ucionice):
     
     cas1["termin"] = random.choice(TERMINI)
     
-    # ... onaj tvoj standardni kod za filtriranje učionica ...
     if cas1["tip"] == "LV":
         dostupne = [u for u in ucionice.values() 
                 if u["tip_ucionice"] == "racunarski_kabinet" 
