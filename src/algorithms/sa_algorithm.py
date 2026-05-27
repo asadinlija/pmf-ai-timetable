@@ -40,6 +40,8 @@ def pokreni_simulated_annealing(zaduzenja, ucionice, pocetna_temp=150.0, stop_te
     T = pocetna_temp
     print(f"SA pokrenut. Početna kazna: {trenutna_kazna}")
     
+    historija = []
+
     while T > stop_temp:
         for _ in range(max_iter):
             susjed = daj_susjedni_raspored(trenutno_stanje, ucionice)
@@ -59,7 +61,7 @@ def pokreni_simulated_annealing(zaduzenja, ucionice, pocetna_temp=150.0, stop_te
                 if random.random() < vjerovatnoca:
                     trenutno_stanje = [cas.copy() for cas in susjed]
                     trenutna_kazna = kazna_susjeda
-                    
+        historija.append(najbolja_kazna)            
         print(f"Temperatura: {T:.2f} | Trenutna kazna: {trenutna_kazna} | Najbolja kazna: {najbolja_kazna}")
         T = T * alfa
         
@@ -67,4 +69,4 @@ def pokreni_simulated_annealing(zaduzenja, ucionice, pocetna_temp=150.0, stop_te
             print("Pronađen savršen raspored bez ikakvih kazni!")
             break
             
-    return najbolje_stanje, najbolja_kazna
+    return najbolje_stanje, najbolja_kazna, historija

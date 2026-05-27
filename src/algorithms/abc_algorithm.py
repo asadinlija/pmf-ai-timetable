@@ -7,7 +7,7 @@ from .sa_algorithm import daj_susjedni_raspored
 def pokreni_abc(zaduzenja, ucionice, broj_kolonije=20, limit=50, max_iteracija=500):
     
     kolonija = []
-    
+    historija = []
     for _ in range(broj_kolonije):
         raspored = generisi_raspored(zaduzenja, ucionice)
         kazna = evaluiraj_raspored(raspored, zaduzenja, ucionice)
@@ -65,7 +65,9 @@ def pokreni_abc(zaduzenja, ucionice, broj_kolonije=20, limit=50, max_iteracija=5
         if trenutno_najbolje["kazna"] < najbolja_kazna:
             najbolja_kazna = trenutno_najbolje["kazna"]
             najbolji_raspored = copy.deepcopy(trenutno_najbolje["raspored"])
+        historija.append(najbolja_kazna)
         if i % 50 == 0:
             print(f"Iteracija {i} | Najbolja kazna: {najbolja_kazna}")
+        
     
-    return najbolji_raspored, najbolja_kazna
+    return najbolji_raspored, najbolja_kazna, historija

@@ -28,15 +28,17 @@ raspored_ljetni = generisi_raspored(zaduzenja_ljetni, ucionice)
 kazna_ljetni = evaluiraj_raspored(raspored_ljetni, zaduzenja_ljetni, ucionice)
 print(f"Pocetna kazna: {kazna_ljetni}")
 '''
-najbolji_raspored_zimski_sa, finalna_kazna_zimski_sa = pokreni_simulated_annealing(
+najbolji_raspored_zimski_sa, finalna_kazna_zimski_sa, _ = pokreni_simulated_annealing(
     zaduzenja_zimski, 
     ucionice,
     pocetna_temp=100000,
     stop_temp= 1000,
-    alfa=0.98,
+    alfa=0.95,
     max_iter = 150
 )
-najbolji_raspored_ljetni_sa, finalna_kazna_ljetni_sa = pokreni_simulated_annealing(
+print(najbolji_raspored_zimski_sa)
+''''
+najbolji_raspored_ljetni_sa, finalna_kazna_ljetni_sa, _ = pokreni_simulated_annealing(
     zaduzenja_ljetni, 
     ucionice,
     pocetna_temp=100000,
@@ -44,7 +46,7 @@ najbolji_raspored_ljetni_sa, finalna_kazna_ljetni_sa = pokreni_simulated_anneali
     alfa=0.98,
     max_iter = 150
 )
-najbolji_raspored_zimski_abc, finalna_kazna_zimski_abc = pokreni_abc(
+najbolji_raspored_zimski_abc, finalna_kazna_zimski_abc, _ = pokreni_abc(
     zaduzenja_zimski, 
     ucionice,
     broj_kolonije=20,
@@ -52,19 +54,19 @@ najbolji_raspored_zimski_abc, finalna_kazna_zimski_abc = pokreni_abc(
     max_iteracija=700
 )
 
-najbolji_raspored_ljetni_abc, finalna_kazna_ljetni_abc = pokreni_abc(
+najbolji_raspored_ljetni_abc, finalna_kazna_ljetni_abc, _ = pokreni_abc(
     zaduzenja_ljetni, 
     ucionice,
     broj_kolonije=20,
     limit = 50,
     max_iteracija=700
 )
-generisi_sve_rasporede(najbolji_raspored_zimski_sa, "output/zimski_sa")
-generisi_sve_rasporede(najbolji_raspored_ljetni_sa, "output/ljetni_sa")
+#generisi_sve_rasporede(najbolji_raspored_zimski_sa, "output/zimski_sa")
+#generisi_sve_rasporede(najbolji_raspored_ljetni_sa, "output/ljetni_sa")
 
-generisi_sve_rasporede(najbolji_raspored_zimski_abc, "output/zimski_abc")
-generisi_sve_rasporede(najbolji_raspored_ljetni_abc, "output/ljetni_abc")
-'''
+#generisi_sve_rasporede(najbolji_raspored_zimski_abc, "output/zimski_abc")
+#generisi_sve_rasporede(najbolji_raspored_ljetni_abc, "output/ljetni_abc")
+
 print(f"\nOptimizacija završena! Finalna kazna rasporeda je: {finalna_kazna_zimski}")
 print(f"\nOptimizacija završena! Finalna kazna rasporeda je: {finalna_kazna_ljetni}")
 
