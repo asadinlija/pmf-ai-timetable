@@ -90,7 +90,7 @@ def analiziraj_semestar(ime_semestra, kljuc_sa, kljuc_abc):
     cd = cliffs_delta(sa_fitness, abc_fitness)
     print(f"\n[4] Cliff's delta effect size: {cd:.4f}")
     
-    # [5] Plotovanje BOX-PLOTA
+    #  Plotovanje BOX-PLOTA
     plt.figure(figsize=(6, 5))
     sns.boxplot(data=[sa_fitness, abc_fitness], palette="Set2")
     plt.xticks([0, 1], ['Simulirano Kaljenje (SA)', 'Artificial Bee Colony (ABC)'])
