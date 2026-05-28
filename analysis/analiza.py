@@ -27,11 +27,6 @@ rezultati_abc_zimski = []
 rezultati_sa_ljetni = []
 rezultati_abc_ljetni = []
 
-sve_historije_sa_zimski = []
-sve_historije_abc_zimski = []
-sve_historije_sa_ljetni = []
-sve_historije_abc_ljetni = []
-
 
 for i in range(30):
     print(f"SA zimski pokretanje {i+1}/30")
@@ -43,9 +38,8 @@ for i in range(30):
         alfa=0.95,
         max_iter=150
     )
-    sve_historije_sa_zimski.append(historija_sa_zimski)
     trajanje = time.time() - pocetak
-    rezultati_sa_zimski.append({"kazna": float(kazna), "trajanje": trajanje})
+    rezultati_sa_zimski.append({"kazna": float(kazna), "trajanje": trajanje, "historija": historija_sa_zimski})
     print(f"  Kazna: {kazna:.0f}, Trajanje: {trajanje:.1f}s")
 
 for i in range(30):
@@ -55,11 +49,10 @@ for i in range(30):
         zaduzenja_zimski, ucionice,
         broj_kolonije=20,
         limit=50,
-        max_iteracija=500
+        max_iteracija=700
     )
-    sve_historije_abc_zimski.append(historija_abc_zimski)
     trajanje = time.time() - pocetak
-    rezultati_abc_zimski.append({"kazna": float(kazna), "trajanje": trajanje})
+    rezultati_abc_zimski.append({"kazna": float(kazna), "trajanje": trajanje, "historija": historija_abc_zimski})
     print(f"  Kazna: {kazna:.0f}, Trajanje: {trajanje:.1f}s")
 
 
@@ -73,9 +66,8 @@ for i in range(30):
         alfa=0.95,
         max_iter=150
     )
-    sve_historije_sa_ljetni.append(historija_sa_ljetni)
     trajanje = time.time() - pocetak
-    rezultati_sa_ljetni.append({"kazna": float(kazna), "trajanje": trajanje})
+    rezultati_sa_ljetni.append({"kazna": float(kazna), "trajanje": trajanje, "historija": historija_sa_ljetni})
     print(f"  Kazna: {kazna:.0f}, Trajanje: {trajanje:.1f}s")  
 
 for i in range(30):
@@ -85,11 +77,10 @@ for i in range(30):
         zaduzenja_ljetni, ucionice,
         broj_kolonije=20,
         limit=50,
-        max_iteracija=500
+        max_iteracija=700
     )
-    sve_historije_abc_ljetni.append(historija_abc_ljetni)
     trajanje = time.time() - pocetak
-    rezultati_abc_ljetni.append({"kazna": float(kazna), "trajanje": trajanje})
+    rezultati_abc_ljetni.append({"kazna": float(kazna), "trajanje": trajanje, "historija": historija_abc_ljetni})
     print(f"  Kazna: {kazna:.0f}, Trajanje: {trajanje:.1f}s")
 
 with open("data/rezultati.json", "w") as f:

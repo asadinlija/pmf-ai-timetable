@@ -69,7 +69,6 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
     GRANICA_POPODNE = 7
     RANIJI_SLOTOVI = {1, 2, 3, 4, 5, 6, 7, 8}
 
-    # === JEDAN JEDINI PROLAZ KROZ RESPODRED ===
     for d in raspored:
         termin = d["termin"]
         dan, slot = termin[0], termin[1]
@@ -80,7 +79,7 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
         broj_stud = d["broj_studenata"]
         grupe = d["grupe"]
 
-        # --- H5 ---
+        # H5 
         if tip == "LV":
             if d["ucionica"]["kapacitet_lv_vjezbi"] < broj_stud:
                 ukupna_tvrda_kazna += HARD_PENAL
@@ -89,33 +88,33 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
             if d["ucionica"]["kapacitet_nastave"] < broj_stud:
                 ukupna_tvrda_kazna += HARD_PENAL
                 debug_h5 += 1
-        # --- H8 ---
+        # H8 
         if tip == "LV" and d["ucionica"]["tip_ucionice"] != "racunarski_kabinet":
             ukupna_tvrda_kazna += HARD_PENAL
             debug_h8 += 1
 
-        # --- H9 ---
+        # H9 
         if dan == "Četvrtak" and slot == 6:
             if provjeri_redovno_zaposlenje(d["zvanje_nastavnika"]):
                 ukupna_tvrda_kazna += HARD_PENAL
                 debug_h9 += 1
 
-        # --- S4 ---
+        # S4 
         for (smjer, godina) in grupe:
             if godina >= 4 and slot < GRANICA_POPODNE:
                 ukupna_meka_kazna += TEZINE["S4"]
                 break
 
-        # --- S7 ---
+        # S7 
         is_redovni = provjeri_redovno_zaposlenje(nastavnik)
         if not is_redovni and slot in RANIJI_SLOTOVI:
             ukupna_meka_kazna += TEZINE["S7"]
 
-        # --- S8 ---
+        # S8 
         if d["predmet"] == "Programiranje I" and tip == "LV" and ucionica_id != "A1":
             ukupna_meka_kazna += TEZINE["S8"]
 
-        # --- Punjenje indeksa za grupne provjere ---
+        # Punjenje indeksa za grupne provjere 
         po_terminima.setdefault(termin, []).append(d)
         po_predmetima.setdefault((pid, tip), []).append(d)
         brojac_h7[(d["predmet_id_orig"], tip)] = brojac_h7.get((d["predmet_id_orig"], tip), 0) + 1
@@ -141,10 +140,6 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
             raspored_profesora[nastavnik][dan].add(slot)
             casovi_profesora.setdefault(nastavnik, []).append(d)
 
-
-    # === PROVJERA GRUPNIH KONFLIKATA (UMJESTO SVE SA SVAKIM) ===
-
-    # Optimizacija za H1, H2, H3 (Gledamo samo unutar ISTOG TERMINA)
     for termin, stavke in po_terminima.items():
         n = len(stavke)
         if n < 2:
@@ -167,13 +162,12 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
                     ukupna_tvrda_kazna += HARD_PENAL
                     debug_h3 += 1
 
-    # Optimizacija za H4 i H6 (Gledamo samo unutar ISTOG PREDMETA I TIPA)
     for (pid, tip), stavke in po_predmetima.items():
         n = len(stavke)
         if n < 2:
             continue
         
-        # Unaprijed pretvaramo grupe u setove radi brže komparacije u H4
+        # Unaprijed pretvaramo grupe u setove radi brze komparacije u H4
         setovi_grupa = [set(x["grupe"]) for x in stavke]
         max_kap = max_kapacitet_lv if tip == "LV" else max_kapacitet_nastava
 
@@ -191,15 +185,15 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
                 
                 # H6
                 if a["termin"] != b["termin"] and set_a != set_b:
-                    # Da li su te dve grupe mogle da stanu zajedno u najveću učionicu?
+                    # Da li su te dvije grupe mogle da stanu zajedno u najvecu ucionicu?
                     if a["broj_studenata"] + b["broj_studenata"] <= max_kap:
                         ukupna_tvrda_kazna += HARD_PENAL
                         debug_h6 += 1
 
-    # --- H7 ---
+    # H7 
     for z in zaduzenja:
         ukupno = brojac_h7.get((z["predmet_id"], z["tip_nastave"]), 0)
-    # Izračunaj broj grupa za ovaj predmet
+    # Izracunaj broj grupa za ovaj predmet
         if z["tip_nastave"] == "LV":
             max_kap_lv = max(u["kapacitet_lv_vjezbi"] for u in ucionice.values() 
                         if u["tip_ucionice"] == "racunarski_kabinet")
@@ -210,7 +204,7 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
         if ukupno != z["trajanje"] * broj_grupa:
             ukupna_tvrda_kazna += HARD_PENAL
 
-    # --- S1 i S2 (Sve u jednoj iteraciji kroz grupe-dane) ---
+    # S1 i S2 
     s1_tezina = TEZINE["S1"]
     s2_tezina = TEZINE["S2"]
     for kljuc, jedinstveni_slotovi in po_grupama_danima.items():
@@ -232,14 +226,14 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
         if trenutna_duzina_niza > 5:
             ukupna_meka_kazna += (trenutna_duzina_niza - 5) * s2_tezina
 
-    # --- S3 ---
+    # S3 
     s3_tezina = TEZINE["S3"]
     for grupa, dani_r in po_grupama_s3.items():
         idealno = sum(dani_r.values()) / 5.0
         for dan in DANI:
             ukupna_meka_kazna += abs(dani_r[dan] - idealno) * s3_tezina
 
-    # --- S5 ---
+    # S5 
     s5_tezina = TEZINE["S5"]
     for kljuc, tipovi in termini_s5.items():
         if tipovi["P"] and tipovi["AV_LV"]:
@@ -250,7 +244,7 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
                     if pb > vb:
                         ukupna_meka_kazna += s5_tezina
 
-    # --- S6 ---
+    # S6 
     s6_tezina = TEZINE["S6"]
     for kljuc, jedinstveni_slotovi in raspored_nastavnici.items():
         slotovi = sorted(list(jedinstveni_slotovi))
@@ -259,7 +253,7 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
             if razlika > 1:
                 ukupna_meka_kazna += (razlika - 1) * s6_tezina
 
-    # --- S9 ---
+    # S9 
     s9_tezina = TEZINE["S9"]
     for prof, dani in raspored_profesora.items():
         prekrsaji = 0
@@ -338,21 +332,21 @@ def evaluiraj_raspored(raspored, zaduzenja, ucionice):
         ukupna_meka_kazna += prekrsaji * s9_tezina
 
     return ukupna_tvrda_kazna + ukupna_meka_kazna
-
+''''
 def debug_hard(raspored, zaduzenja, ucionice):
     from config import HARD_PENAL
     from math import ceil
     d_h1=d_h2=d_h3=d_h4=d_h5=d_h6=d_h7=d_h8=d_h9=0
     
-    # Osiguravamo ispravno čitanje učionica bez obzira da li je dict ili list
+    # Osiguravamo ispravno citanje učionica bez obzira da li je dict ili list
     sve_ucionice = ucionice.values() if isinstance(ucionice, dict) else ucionice
     
     max_kap_nastava = max(u["kapacitet_nastave"] for u in sve_ucionice if u["tip_ucionice"] != "racunarski_kabinet")
     max_kap_lv = max(u["kapacitet_lv_vjezbi"] for u in sve_ucionice if u["tip_ucionice"] == "racunarski_kabinet")
     
     po_terminima = {}
-    po_predmetima = {}  # Ovdje grupišemo po SPECIFIČNOJ GRUPI (predmet_id sa sufiksom)
-    brojac_h7 = {}      # Ovdje brojim fond po ORIGINALNOM id-ju
+    po_predmetima = {}  # Ovdje grupišemo po specificnoj (predmet_id sa sufiksom)
+    brojac_h7 = {}      # Ovdje brojimo fond po ORIGINALNOM id-ju
     
     for d in raspored:
         dan, slot = d["termin"]
@@ -422,3 +416,5 @@ def debug_hard(raspored, zaduzenja, ucionice):
             d_h7 += 1
             print(f"H7: {z['predmet']} {z['tip_nastave']}: treba {z['trajanje'] * broj_grupa}, ima {ukupno}")
     print(f"H1:{d_h1} H2:{d_h2} H3:{d_h3} H4:{d_h4} H5:{d_h5} H6:{d_h6} H7:{d_h7} H8:{d_h8} H9:{d_h9}")
+
+'''

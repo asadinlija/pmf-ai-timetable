@@ -6,14 +6,31 @@ from reportlab.lib import colors
 from reportlab.lib.units import cm
 from config import DANI, SLOT_VREMENA
 
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+# Registrujemo Arial font 
+try:
+    pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf'))
+    GLAVNI_FONT = 'Arial'
+    BOLD_FONT = 'Arial-Bold'
+except Exception as e:
+    # Ako sistem nema Arial, Helvetica ostaje kao fallback
+    print(f"Upozorenje: Nije moguće učitati Arial font ({e}). Koristi se Helvetica.")
+    GLAVNI_FONT = 'Helvetica'
+    BOLD_FONT = 'Helvetica-Bold'
+
+
+
 def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
-    # 1. Inicijalizacija prazne tabele sa naslovima
+    #  Inicijalizacija prazne tabele sa naslovima
     tabela = [["SATNICA"] + DANI]
     for slot in range(1, 13):
         red = [SLOT_VREMENA[slot]] + [""] * 5
         tabela.append(red)
 
-    # 2. Popunjavanje sirovih podataka iz rasporeda
+    # Popunjavanje sirovih podataka iz rasporeda
     for d in raspored:
         if (smjer, godina) not in d["grupe"]:
             continue
@@ -29,24 +46,24 @@ def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
         else:
             tabela[slot_idx][dan_idx] = sadrzaj
 
-    # 3. Postavka stilova za tekst unutar ćelija
+    # Postavka stilova za tekst unutar celija
     styles = getSampleStyleSheet()
     
-    # Stil za obične ćelije (centrirano, malo manji font da sve stane)
+    # Stil za obične celije (centrirano, malo manji font da sve stane)
     stil_celije = ParagraphStyle(
         'StilCelije',
         parent=styles['Normal'],
-        fontName='Helvetica',
+        fontName=GLAVNI_FONT,
         fontSize=7,
         leading=9,
-        alignment=1  # 1 označava CENTER
+        alignment=1  # 1 oznacava CENTER
     )
     
     # Stil za zaglavlja (satnica i dani)
     stil_zaglavlja = ParagraphStyle(
         'StilZaglavlja',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
+        fontName=BOLD_FONT,
         fontSize=9,
         leading=11,
         textColor=colors.white,
@@ -57,14 +74,14 @@ def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
     stil_satnice = ParagraphStyle(
         'StilSatnice',
         parent=styles['Normal'],
-        fontName='Helvetica-Bold',
+        fontName=BOLD_FONT,
         fontSize=8,
         leading=10,
         textColor=colors.HexColor('#333333'),
         alignment=1
     )
 
-    # 4. Pretvaranje svih stringova u Paragraph objekte (KLJUČNI KORAK ZA REPORTLAB)
+    # Pretvaranje svih stringova u Paragraph objekte (kljucni korak ZA REPORTLAB)
     procesirana_tabela = []
     for i, red in enumerate(tabela):
         novi_red = []
@@ -80,7 +97,7 @@ def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
                     novi_red.append(Paragraph(celija, stil_celije))
         procesirana_tabela.append(novi_red)
 
-    # 5. Kreiranje dokumenta u landscape formatu
+    # Kreiranje dokumenta u landscape formatu
     os.makedirs(os.path.dirname(putanja_pdf), exist_ok=True)
     doc = SimpleDocTemplate(
         putanja_pdf,
@@ -93,7 +110,7 @@ def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
     stil_naslova = ParagraphStyle(
         'NaslovRasporeda',
         parent=styles['Title'],
-        fontName='Helvetica-Bold',
+        fontName=BOLD_FONT,
         fontSize=14,
         leading=16,
         alignment=1,
@@ -104,22 +121,20 @@ def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
         stil_naslova
     )
 
-    # 6. Definisanje profesionalnog dizajna tabele
     stil_tabele = TableStyle([
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cccccc')), # Tanja, siva mreža umjesto debele crne
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a365d')), # Tamno plava boja za dane (izgleda akademski)
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cccccc')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a365d')), 
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BACKGROUND', (0, 1), (0, -1), colors.HexColor('#f7fafc')), # Blaga siva pozadina za satnicu
+        ('BACKGROUND', (0, 1), (0, -1), colors.HexColor('#f7fafc')), 
         ('ROWBACKGROUNDS', (1, 1), (-1, -1), [colors.white, colors.HexColor('#fcfcfc')]), # Naizmjenični redovi
         ('TOPPADDING', (0, 0), (-1, -1), 6),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
     ])
 
-    # Širine kolona (ukupno 27.5cm, idealno za A4 landscape sa marginama od 1cm)
     col_widths = [2.5*cm] + [5*cm] * 5
     
-    # Ostavljamo rowHeights=None da se visina reda automatski prilagodi količini teksta
+    # Ostavljamo rowHeights=None da se visina reda automatski prilagodi kolicini teksta
     t = Table(procesirana_tabela, colWidths=col_widths, rowHeights=None)
     t.setStyle(stil_tabele)
 
@@ -127,7 +142,7 @@ def generisi_pdf_raspored(raspored, smjer, godina, semestar, putanja_pdf):
     doc.build([naslov, Spacer(1, 0.2*cm), t])
     print(f"PDF uspjesno generisan na lokaciji: {putanja_pdf}")
 
-def generisi_sve_rasporede(raspored, putanja_folder="output/rasporedi"):    
+def generisi_sve_rasporede(raspored, semestar, putanja_folder="output/rasporedi"):    
 
     # sve jedinstvene kombinacije smjer+godina
     kombinacije = set()
@@ -139,7 +154,8 @@ def generisi_sve_rasporede(raspored, putanja_folder="output/rasporedi"):
     for (smjer, godina) in sorted(kombinacije):
         putanja = f"{putanja_folder}/{smjer}_godina{godina}.pdf"
         try:
-            generisi_pdf_raspored(raspored, smjer, godina, "zimski", putanja)
+            sem = ""
+            generisi_pdf_raspored(raspored, smjer, godina,semestar,putanja)
         except Exception as e:
 
             print(f"Greska za {smjer} godina {godina}: {e}")

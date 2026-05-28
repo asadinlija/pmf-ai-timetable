@@ -38,7 +38,7 @@ def pokreni_simulated_annealing(zaduzenja, ucionice, pocetna_temp=150.0, stop_te
     najbolja_kazna = trenutna_kazna
     
     T = pocetna_temp
-    print(f"SA pokrenut. Početna kazna: {trenutna_kazna}")
+    print(f"SA pokrenut. Pocetna kazna: {trenutna_kazna}")
     
     historija = []
 
@@ -49,7 +49,7 @@ def pokreni_simulated_annealing(zaduzenja, ucionice, pocetna_temp=150.0, stop_te
             
             delta_e = kazna_susjeda - trenutna_kazna
             
-            if delta_e < 0:
+            if delta_e <= 0:
                 trenutno_stanje = [cas.copy() for cas in susjed]
                 trenutna_kazna = kazna_susjeda
                 
@@ -66,7 +66,7 @@ def pokreni_simulated_annealing(zaduzenja, ucionice, pocetna_temp=150.0, stop_te
         T = T * alfa
         
         if najbolja_kazna == 0:
-            print("Pronađen savršen raspored bez ikakvih kazni!")
+            print("Pronađen savrsen raspored bez ikakvih kazni!")
             break
             
     return najbolje_stanje, najbolja_kazna, historija
