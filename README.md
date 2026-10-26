@@ -99,13 +99,6 @@ Supported approaches: backtracking, hill climbing, simulated annealing, genetic 
 **Soft constraints**
 - Priority for certain courses or instructors
 
-## Example Output
-
-```text
-Mon 09:00   CS101    R101   T1   G1
-Mon 11:00   MATH201  R202   T2   G2
-Tue 09:00   PHYS101  R101   T3   G1
-```
 
 ## Testing
 
